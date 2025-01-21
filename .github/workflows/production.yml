@@ -1,0 +1,24 @@
+name: Production workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./TripDayFrontend
+    steps:
+      - name: Production Code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22.x
+      - run: npm install
+      - run: npm run lint
+      - run: npm run test

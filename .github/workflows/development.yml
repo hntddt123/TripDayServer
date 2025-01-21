@@ -1,0 +1,24 @@
+name: Development workflow
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./TripDayBackend
+    steps:
+      - name: Development Code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22.x
+      - run: npm install
+      - run: npm run lint
+      - run: npm run test

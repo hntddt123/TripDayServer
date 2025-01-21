@@ -13,13 +13,13 @@ const serverPort = 5400;
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-	knexInstance.raw('SELECT NOW()').then((result) => {
-		res.send(`Hello World! The current time is ${result.rows[0].now}`);
-	}).catch((error) => {
-		res.status(500).json(`Database error ${error}`);
-	});
+  knexInstance.raw('SELECT NOW()').then((result) => {
+    res.send(`Hello World! The current time is ${result.rows[0].now}`);
+  }).catch((error) => {
+    res.status(500).json(`Database error ${error}`);
+  });
 });
 
 app.listen(serverPort, () => {
-	console.log(`Example app listening at http://localhost:${serverPort}`);
+  console.log(`Example app listening at http://localhost:${serverPort}`);
 });

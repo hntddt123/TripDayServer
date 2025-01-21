@@ -14,7 +14,7 @@ services:
       NODE_ENV: production
       DB_HOST: db
       DB_USER: nientaiho
-      DB_PASSWORD: +Ilov3tr1pd4y
+      DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: tripdaydb
     ports:
       - "5400:5400"
@@ -25,7 +25,7 @@ services:
     environment:
       NODE_ENV: production
       POSTGRES_USER: nientaiho
-      POSTGRES_PASSWORD: +Ilov3tr1pd4y
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: tripdaydb
     volumes:
       - postgres_data:/var/lib/postgresql/data

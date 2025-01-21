@@ -1,26 +1,32 @@
 {
   "name": "trip-day-server",
+  "author": "Nien-Tai Ho <nientaiho@gmail.com>",
   "version": "0.1.0",
-  "description": "express with mongoose",
+  "description": "trip day server backend and postgres database",
   "main": "app.js",
   "scripts": {
-    "start": "npm run lint & nodemon --exec babel-node app.js",
-    "lint": "eslint \"**/*.js\""
+    "start": "babel-node app.js",
+    "docker": "docker compose up --build",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watchAll",
+    "lint": "eslint '**/*.{js,jsx,ts,tsx}'"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.17.10",
+    "@babel/eslint-parser": "^7.24.6",
     "@babel/node": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.18.0",
-    "mongoose": "^6.3.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
-    "eslint": "^8.14.0",
-    "eslint-config-airbnb": "^19.0.4"
+    "eslint": "^8.57.1"
   }
 }

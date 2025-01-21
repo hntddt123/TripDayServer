@@ -1,42 +1,39 @@
 import express from 'express';
+import { Client } from 'pg';
+import dotenv from 'dotenv';
 import morgan from 'morgan'; // logger
-import { json, urlencoded } from 'body-parser';
-import cors from 'cors';
-import mongoose from 'mongoose';
 
-import apiRoute from './api';
+dotenv.config({ path: '.env.development' });
 
 const app = express();
+const serverPort = 5400;
 
-app.set('port', (process.env.PORT || 8081));
-
-app.use(json());
-app.use(urlencoded({ extended: false }));
-
-app.use(cors());
-app.use(express.static('public'));
-
-app.use(morgan('dev'));
-
-app.use('/api', apiRoute);
-
-app.use((req, res) => {
-	const err = new Error('Not Found');
-	err.status = 404;
-	res.json(err);
+const client = new Client({
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_NAME,
+	port: process.env.DB_PORT
 });
 
-mongoose.connect('mongodb://localhost:27017/tripday', { useNewUrlParser: true });
-
-const db = mongoose.connection;
-db.on('error', () => {
-	console.error('connection error');
+client.connect(err => {
+	if (err) {
+		console.error('connection error', err.stack);
+	} else {
+		console.log('connected');
+	}
 });
 
-db.once('open', () => {
-	console.log('Connected to MongoDB');
-
-	app.listen(app.get('port'), () => {
-		console.log(`API Server Listening on port ${app.get('port')}!`);
+app.get('/', (req, res) => {
+	client.query('SELECT NOW()', (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.send(`Hello World! The current time is ${result.rows[0].now}`);
+		}
 	});
+});
+
+app.listen(serverPort, () => {
+	console.log(`Example app listening at http://localhost:${serverPort}`);
 });

@@ -2,17 +2,20 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
+    jest: true
   },
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
+  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaFeatures: {
-      jsx: true,
+      jsx: true
     },
     ecmaVersion: 2018,
     sourceType: 'module',
+    allowImportExportEverywhere: true
   },
   rules: {
     'import/prefer-default-export': 'off',
@@ -27,8 +30,12 @@ module.exports = {
     'no-return-assign': 'warn',
     'no-unused-vars': 'warn',
     'no-param-reassign': 'warn',
+    'padded-blocks': 'warn',
+    'no-multiple-empty-lines': 'warn',
     'max-len': ['warn', { code: 150 }],
-    'jsx-quotes': ['error', 'prefer-single'],
-    'function-paren-newline': ['warn', { minItems: 5 }]
-  },
+    'jsx-quotes': ['warn', 'prefer-single'],
+    'default-param-last': 'off',
+    'no-restricted-globals': 'warn',
+    'prefer-destructuring': 'warn'
+  }
 };

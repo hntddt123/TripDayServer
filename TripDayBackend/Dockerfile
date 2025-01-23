@@ -25,11 +25,11 @@ RUN npm install
 COPY . .
 
 # Copy SSL files and set permissions
-# COPY ./ssl /app/ssl
-# RUN chmod -R 600 /app/ssl/*
+COPY ./ssl /ssl
+RUN chmod -R 600 /ssl/*
 
 # Expose the port that the application listens on.
-EXPOSE 5400
+EXPOSE 443
 
 # Run the application.
 CMD ["npm", "run", "dev"]

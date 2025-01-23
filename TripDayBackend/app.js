@@ -13,7 +13,7 @@ const app = express();
 const serverPort = 5400;
 
 app.use(morgan('dev'));
-app.use(helmet())
+app.use(helmet());
 
 app.get('/', (req, res) => {
   knexInstance.raw('SELECT NOW()').then((result) => {

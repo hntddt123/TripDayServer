@@ -1,3 +1,5 @@
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
+
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */

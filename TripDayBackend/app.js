@@ -7,6 +7,7 @@ import https from 'https';
 import fs from 'fs';
 
 import knexfile from './knexfile';
+import loginRouter from './api/routes/login';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
@@ -24,11 +25,13 @@ const options = {
 
 const httpsServer = https.createServer(options, app);
 
+app.use(loginRouter);
+
 app.get('/', (req, res) => {
   knexInstance.raw('SELECT NOW()').then((result) => {
     res.send(`Hello World! The current time is ${result.rows[0].now}`);
-  }).catch((error) => {
-    res.status(500).json(`Error: ${error}`);
+  }).catch((err) => {
+    res.status(500).json(`Error: ${err}`);
   });
 });
 

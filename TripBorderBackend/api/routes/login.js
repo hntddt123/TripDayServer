@@ -5,12 +5,19 @@ import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
 import pg from 'pg';
 import connectPgSimple from 'connect-pg-simple';
+import fs from 'fs';
+import knex from 'knex';
+import knexfile from '../../knexfile';
 
 const SessionStore = connectPgSimple(session);
+const knexInstance = knex(knexfile.development);
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+const { DB_HOST, DB_USER, DB_NAME } = process.env;
 const { SESSION_SECRET } = process.env;
+const { FRONTEND_ORIGIN } = process.env;
+
+const DB_PASSWORD = fs.readFileSync('/run/secrets/db_password', 'utf8').trim();
 
 const loginRouter = Router();
 
@@ -47,11 +54,28 @@ passport.use(new GoogleStrategy(
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: '/auth/google/callback'
   },
-  ((accessToken, refreshToken, profile, callback) => {
+  async (accessToken, refreshToken, profile, callback) => {
     // fetch or create user here based on profile data
-    callback(null, profile);
+    try {
+      let user = await knexInstance('user_accounts').where({ provider_user_id: profile.id }).first();
+
+      if (!user) {
+        user = await knexInstance('user_accounts').insert({
+          provider: profile.provider,
+          provider_user_id: profile.id,
+          email: profile.emails[0].value,
+          name: profile.displayName,
+          profile_picture: profile.photos[0].value,
+          // If storing tokens (securely)
+          // access_token: accessToken,
+          // refresh_token: refreshToken,
+        }).returning('*').then((rows) => rows[0]);
+      }
+      callback(null, user);
+    } catch (err) {
+      callback(err);
+    }
   }
-  )
 ));
 
 passport.serializeUser((user, done) => {
@@ -72,17 +96,26 @@ loginRouter.get(
   '/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('/');
+    res.redirect(`${FRONTEND_ORIGIN}/?auth=success`);
   }
 );
 
 loginRouter.get('/', (req, res) => {
   if (req.user && req.session.views) {
     req.session.views += 1;
-    res.send(`Hello, ${req.user.displayName}! You are logged in. Viewed: ${req.session.views}`);
+
+    res.json({
+      isLoggedIn: true,
+      viewCount: req.session.views,
+      user: req.user.name,
+      profilePicture: req.user.profile_picture,
+      message: `Welcome ${req.user.name}` });
   } else {
     req.session.views = 1;
-    res.send('Please log in.');
+    res.json({
+      message: 'please login',
+      isLoggedIn: false
+    });
   }
 });
 
@@ -97,10 +130,6 @@ loginRouter.get('/logout', (req, res) => {
       res.redirect('/');
     }
   });
-});
-
-loginRouter.get('/', (req, res) => {
-  res.send(`Hello! You are ${req.user ? `logged in as ${req.user.displayName}` : 'not logged in'}`);
 });
 
 export default loginRouter;

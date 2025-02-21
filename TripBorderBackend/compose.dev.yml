@@ -1,0 +1,91 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+networks:
+  backend-network:
+    name: tripdaybackend-network
+    external: true
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  tunnel_token:
+    file: ./secrets/tunnel_token.txt
+
+services:
+  server:
+    build: .
+    expose:
+    - "7777"
+    volumes:
+      - ./ssl:/ssl
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_USER: nientaiho
+      DB_NAME: tripdaydb
+      SSL_CERTIFICATE_PATH: /ssl/tripdayservercert.pem
+      SSL_PRIVATE_KEY_PATH: /ssl/tripdayserverkey.pem
+    env_file:
+      - .env.development
+    secrets:
+      - db_password
+    networks:
+      - backend-network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: nientaiho
+      POSTGRES_DB: tripdaydb
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:7777/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    ports: 
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/${NGINX_CONF:-dev.conf}:/etc/nginx/conf.d/default.conf
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - backend-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - server
+
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   command: sh -c "cloudflared --no-autoupdate tunnel run --token $(cat /run/secrets/tunnel_token)" 
+  #   secrets:
+  #     - tunnel_token
+  #   depends_on:
+  #     - nginx
+  #   networks:
+  #     - backend-network
+
+volumes:
+  postgres_data: # Define the named volume here

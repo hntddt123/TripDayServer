@@ -9,7 +9,7 @@ exports.up = function createUserAccountsTable(knex) {
     table.string('provider').notNullable(); // e.g., 'google', 'facebook'
     table.string('provider_user_id').notNullable(); // User ID from the SSO provider
     table.string('name').notNullable();
-    table.string('username').unique();
+    table.string('profile_picture');
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
   });

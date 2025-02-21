@@ -1,4 +1,7 @@
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
+const fs = require('fs');
+
+const DB_PASSWORD = fs.readFileSync('/run/secrets/db_password', 'utf8').trim();
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
@@ -9,7 +12,7 @@ module.exports = {
     connection: {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      password: DB_PASSWORD,
       database: process.env.DB_NAME,
     },
     migrations: {

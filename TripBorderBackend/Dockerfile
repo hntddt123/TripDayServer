@@ -10,9 +10,6 @@ ARG NODE_VERSION=18.0.0
 
 FROM node:${NODE_VERSION}-alpine
 
-# Use development node environment by default.
-ENV NODE_ENV=development
-
 WORKDIR /src
 
 # Copy package.json and package-lock.json
@@ -29,8 +26,8 @@ COPY ./ssl /ssl
 RUN chmod -R 600 /ssl/*
 
 # Expose the port that the application listens on.
-EXPOSE 443
+EXPOSE 7777
 
 # Run the application.
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "server"]
 

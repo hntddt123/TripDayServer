@@ -5,10 +5,9 @@
   "description": "trip day server backend and postgres database",
   "main": "app.js",
   "scripts": {
-    "dev": "NODE_ENV=development babel-node app.js",
-    "prod": "NODE_ENV=production babel-node app.js",
-    "docker": "docker compose --env-file .env.development up --build",
-    "dockerprod": "docker compose --env-file .env.production up --build",
+    "server": "babel-node app.js",
+    "docker": "docker compose -f compose.dev.yml up --build",
+    "dockerprod": "docker compose -f compose.prod.yml up --build ",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll",

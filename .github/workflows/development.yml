@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./TripDayBackend
+        working-directory: ./TripBorderBackend
     steps:
       - name: Development Code
         uses: actions/checkout@v2

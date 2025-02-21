@@ -24,8 +24,8 @@ services:
       DB_HOST: db
       DB_USER: nientaiho
       DB_NAME: tripborderdb
-      SSL_CERTIFICATE_PATH: /ssl/tripborderdbservercert.pem
-      SSL_PRIVATE_KEY_PATH: /ssl/tripborderdbserverkey.pem
+      SSL_CERTIFICATE_PATH: /ssl/tripborderservercert.pem
+      SSL_PRIVATE_KEY_PATH: /ssl/tripborderserverkey.pem
     env_file:
       - .env.production
     secrets:

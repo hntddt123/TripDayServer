@@ -48,5 +48,5 @@ app.get('/test', (req, res) => {
 });
 
 httpsServer.listen(serverPort, () => {
-  console.log(`Tripday ${process.env.NODE_ENV} server listening at ${process.env.BACKEND_ORIGIN}:${serverPort}`);
+  console.log(`Trip Border ${process.env.NODE_ENV} server listening at ${process.env.BACKEND_ORIGIN}:${serverPort}`);
 });

@@ -1,8 +1,8 @@
 {
-  "name": "trip-day-server",
+  "name": "trip-border-server",
   "author": "Nien-Tai Ho <nientaiho@gmail.com>",
   "version": "0.1.0",
-  "description": "trip day server backend and postgres database",
+  "description": "trip border server backend and postgres database",
   "main": "app.js",
   "scripts": {
     "server": "babel-node app.js",

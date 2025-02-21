@@ -1,2 +1,2 @@
-# TripDayServer
-Express and PostgresSql server for TripDay database
+# TripBorderServer
+Express and PostgresSql server for TripBorder database

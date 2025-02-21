@@ -14,6 +14,7 @@
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
     "lintfix": "eslint --fix '**/*.{js,jsx,ts,tsx}'",
     "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
     "seed": "knex seed:run"
   },
   "license": "ISC",

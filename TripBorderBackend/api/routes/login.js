@@ -10,7 +10,9 @@ import knex from 'knex';
 import knexfile from '../../knexfile';
 
 const SessionStore = connectPgSimple(session);
-const knexInstance = knex(knexfile.development);
+const knexInstance = (process.env.NODE_ENV === 'development')
+  ? knex(knexfile.development)
+  : knex(knexfile.production);
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 const { DB_HOST, DB_USER, DB_NAME } = process.env;
@@ -109,7 +111,8 @@ loginRouter.get('/', (req, res) => {
       viewCount: req.session.views,
       user: req.user.name,
       profilePicture: req.user.profile_picture,
-      message: `Welcome ${req.user.name}` });
+      message: `Welcome ${req.user.name}`
+    });
   } else {
     req.session.views = 1;
     res.json({

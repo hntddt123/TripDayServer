@@ -9,8 +9,14 @@
 # https://github.com/docker/awesome-compose
 networks:
   backend-network:
-    name: tripborderdbbackend-network
+    name: tripborder-backend-network
     external: true
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  tunnel_token:
+    file: ./secrets/tunnel_token.txt
 
 services:
   server:
@@ -28,12 +34,14 @@ services:
       SSL_PRIVATE_KEY_PATH: /ssl/tripborderserverkey.pem
     env_file:
       - .env.production
+    command: sh -c "npx knex migrate:latest && npm run server" # migrate to latest database schema
     secrets:
       - db_password
     networks:
       - backend-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:latest
@@ -44,14 +52,14 @@ services:
     secrets:
       - db_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - backend-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:7777/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD", "pg_isready", "-U", "nientaiho", "-d", "tripborderdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:alpine
@@ -71,19 +79,5 @@ services:
     depends_on:
       - server
 
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
-  #   environment:
-  #     - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-  #   depends_on:
-  #     - nginx
-  #   networks:
-  #     - backend-network
-      
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-
 volumes:
-  postgres_data: # Define the named volume here
+  postgres_data_prod: # Define the named volume here

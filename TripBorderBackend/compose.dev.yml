@@ -29,7 +29,7 @@ services:
       NODE_ENV: development
       DB_HOST: db
       DB_USER: nientaiho
-      DB_NAME: tripborderdb
+      DB_NAME: tripborderdevdb
       SSL_CERTIFICATE_PATH: /ssl/tripborderservercert.pem
       SSL_PRIVATE_KEY_PATH: /ssl/tripborderserverkey.pem
     env_file:
@@ -40,25 +40,27 @@ services:
     networks:
       - backend-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
 
   db:
     image: postgres:latest
     environment:
       POSTGRES_USER: nientaiho
-      POSTGRES_DB: tripborderdb
+      POSTGRES_DB: tripborderdevdb
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_dev:/var/lib/postgresql/data
     networks:
       - backend-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:7777/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD", "pg_isready", "-U", "nientaiho", "-d", "tripborderdevdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:alpine
@@ -78,15 +80,5 @@ services:
     depends_on:
       - server
 
-  # cloudflared:
-  #   image: cloudflare/cloudflared:latest
-  #   command: sh -c "cloudflared --no-autoupdate tunnel run --token $(cat /run/secrets/tunnel_token)" 
-  #   secrets:
-  #     - tunnel_token
-  #   depends_on:
-  #     - nginx
-  #   networks:
-  #     - backend-network
-
 volumes:
-  postgres_data: # Define the named volume here
+  postgres_data_dev: # Define the named volume here
